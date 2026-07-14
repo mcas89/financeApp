@@ -2354,7 +2354,31 @@ export const financeRoutes = {
                                 limitDate.setDate(limitDate.getDate() + 3);
                                 const limitStr = `${limitDate.getFullYear()}-${String(limitDate.getMonth()+1).padStart(2,'0')}-${String(limitDate.getDate()).padStart(2,'0')}`;
 
-                                const pendingTxs = allTxs.filter(t => t.status === 'pending' && t.date <= limitStr).sort((a, b) => new Date(a.date) - new Date(b.date));
+                                // Filtrar transações pendentes (ignorando compras de cartão bruto)
+                                const ccWalletIds = wallets.filter(w => w.type === 'credit_card').map(w => w.id);
+                                let basePending = allTxs.filter(t => t.status === 'pending' && !ccWalletIds.includes(t.walletId));
+
+                                // Injetar faturas abertas dos cartões
+                                wallets.forEach(w => {
+                                    if (w.type === 'credit_card') {
+                                        const engineData = creditEngine.processCard(w, allTxs);
+                                        engineData.invoices.forEach(inv => {
+                                            if (inv.totalAmount > 0) {
+                                                basePending.push({
+                                                    id: `inv_${w.id}_${inv.id}`,
+                                                    description: `Fatura ${w.name}`,
+                                                    amount: inv.totalAmount,
+                                                    date: inv.dueDate,
+                                                    type: 'expense',
+                                                    status: 'pending',
+                                                    isInvoice: true
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+
+                                const pendingTxs = basePending.filter(t => t.date <= limitStr).sort((a, b) => new Date(a.date) - new Date(b.date));
                                 
                                 if (upcomingList) {
                                     if (pendingTxs.length === 0) {
@@ -2387,7 +2411,10 @@ export const financeRoutes = {
                                                     </div>
                                                     <div style="display: flex; align-items: center; gap: 1rem;">
                                                         <span style="font-weight: 700; color: ${tx.type === 'expense' ? 'var(--error)' : 'var(--success)'}">R$ ${tx.amount.toFixed(2)}</span>
-                                                        <button onclick="window.promptPayPending('${tx.id}', ${tx.amount})" style="background: linear-gradient(135deg, var(--primary), #a855f7); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(139,92,246,0.2);">Pagar</button>
+                                                        ${tx.isInvoice 
+                                                            ? `<button onclick="navigation.goTo('/cards')" style="background: linear-gradient(135deg, var(--primary), #a855f7); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(139,92,246,0.2);">Pagar</button>`
+                                                            : `<button onclick="window.promptPayPending('${tx.id}', ${tx.amount})" style="background: linear-gradient(135deg, var(--primary), #a855f7); color: white; border: none; border-radius: var(--radius-sm); padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(139,92,246,0.2);">Pagar</button>`
+                                                        }
                                                     </div>
                                                 </div>
                                             `;

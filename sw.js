@@ -1,10 +1,10 @@
-const CACHE_NAME = 'dc-app-cache-v2';
+const CACHE_NAME = 'dc-app-cache-v3';
 
 // Recursos críticos para carregar o app em modo avião
 const urlsToCache = [
   './index.html',
   './manifest.json',
-  './logo.png',
+  './icon.svg',
   './css/base.css',
   './css/layout.css',
   './js/app.js',

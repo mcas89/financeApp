@@ -2423,10 +2423,9 @@ export const financeRoutes = {
                                 }
 
                                 if (recentList) {
-                                    // Pega transacoes efetivadas ou antigas (que nao sao pending de hoje pra frente)
-                                    // ou apenas as ultimas de qualquer tipo. O usuario pediu transacoes recentes.
+                                    // Pega transacoes efetivadas, contas antigas, ou compras de cartao (que estao sempre pending ate fechar fatura)
                                     const recent = [...allTxs]
-                                        .filter(t => t.status !== 'pending' || t.date < todayStr)
+                                        .filter(t => t.status !== 'pending' || t.date < todayStr || ccWalletIds.includes(t.walletId))
                                         .sort((a, b) => new Date(b.date) - new Date(a.date))
                                         .slice(0, 5);
 

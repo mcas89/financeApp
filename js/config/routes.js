@@ -71,6 +71,7 @@ const setupRegisterView = () => {
     const emailInput = document.getElementById('reg-email');
     const passInput = document.getElementById('reg-password');
     const confirmInput = document.getElementById('reg-confirm-password');
+    const nameInput = document.getElementById('reg-name');
 
     const validate = () => {
         let isValid = true;
@@ -115,7 +116,7 @@ const setupRegisterView = () => {
         btn.disabled = true;
         
         try {
-            await authService.register(emailInput.value, passInput.value);
+            await authService.register(emailInput.value, passInput.value, nameInput ? nameInput.value.trim() : 'Usuário');
             toast.success("Conta criada com sucesso!");
             setTimeout(() => navigation.go('/onboarding'), 1000);
         } catch (error) {

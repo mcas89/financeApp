@@ -75,6 +75,11 @@ class AuthService {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
             
+            // Atualiza o perfil no Firebase Auth
+            if (name) {
+                await updateProfile(user, { displayName: name });
+            }
+            
             // 1. Criar Workspace Padrão
             const workspace = await workspaceService.createWorkspace(user.uid, "Meu Workspace");
             

@@ -58,6 +58,7 @@ class TransactionService {
                     frequency: isRecurring ? frequency : null,
                     installmentIndex: isRecurring ? i + 1 : null,
                     totalInstallments: isRecurring ? occurrences : null,
+                    installments: txData.installments || 1,
                     createdBy: uid,
                     createdAt: new Date().toISOString()
                 };

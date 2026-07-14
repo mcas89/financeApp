@@ -2422,7 +2422,10 @@ export const financeRoutes = {
                                                             <span style="font-size: 0.75rem; color: var(--text-secondary);">${dateFmt}</span>
                                                         </div>
                                                     </div>
-                                                    <span style="font-weight: 700; color: ${color}">${tx.type === 'expense' ? '-' : '+'} R$ ${tx.amount.toFixed(2)}</span>
+                                                    <div style="display: flex; align-items: baseline; gap: 4px;">
+                                                        <span style="font-weight: 700; color: ${color}">${tx.type === 'expense' ? '-' : '+'} R$ ${tx.amount.toFixed(2)}</span>
+                                                        ${tx.installments && tx.installments > 1 ? `<span style="font-size: 0.75rem; color: var(--text-secondary); font-weight: normal;">em ${tx.installments}x</span>` : ''}
+                                                    </div>
                                                 </div>
                                             `;
                                         }).join('');

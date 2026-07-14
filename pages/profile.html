@@ -235,27 +235,30 @@
 
     </main>
 
-    <!-- Modal Re-Autenticação e Exclusão -->
-    <dialog id="delete-account-modal" style="width: 85%; max-width: 350px; border: none; border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 1.5rem; box-shadow: var(--shadow-lg); text-align: center; overflow: visible;">
-        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; backdrop-filter: blur(10px); border-radius: var(--radius-lg);"></div>
-        
-        <div style="margin-bottom: 1rem;">
-            <i class="fas fa-user-times" style="font-size: 2.5rem; color: var(--danger);"></i>
+    <dialog id="delete-account-modal" style="width: 90%; max-width: 400px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden;">
+        <div style="background: var(--danger-bg); padding: 2rem 1.5rem; text-align: center; border-bottom: 1px solid rgba(239, 68, 68, 0.2);">
+            <div style="width: 70px; height: 70px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--danger); font-size: 2.5rem; border: 2px solid rgba(239, 68, 68, 0.2);">
+                <i class="fas fa-skull-crossbones"></i>
+            </div>
+            <h3 style="margin-bottom: 0.5rem; font-size: 1.4rem; font-weight: 800; color: var(--danger);">Exclusão Permanente</h3>
+            <p style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.5; font-weight: 500;">
+                Você está prestes a apagar toda a sua vida financeira do aplicativo.
+            </p>
         </div>
         
-        <h3 style="margin-bottom: 0.5rem; font-size: 1.2rem; font-weight: 600;">Exclusão Permanente</h3>
-        <p style="margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-            Para garantir sua segurança, por favor, insira sua senha atual para deletar sua conta.
-        </p>
-        
-        <form id="delete-account-form">
-            <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
-                <input type="password" id="delete-password" class="form-input" placeholder="Sua senha" required style="text-align: center;">
+        <form id="delete-account-form" style="padding: 1.5rem;">
+            <div class="premium-input-group" style="margin-bottom: 1.5rem;">
+                <label for="delete-password" style="text-align: center; color: var(--danger);">Digite sua senha para confirmar</label>
+                <div style="position: relative;">
+                    <input type="password" id="delete-password" class="premium-input" placeholder="Sua senha secreta" required style="text-align: center; border-color: rgba(239, 68, 68, 0.3); background: var(--bg-color);">
+                </div>
             </div>
             
-            <div style="display: flex; gap: 0.75rem;">
-                <button type="button" class="btn" onclick="document.getElementById('delete-account-modal').close()" style="flex: 1; background: var(--bg-color); color: var(--text-primary);">Cancelar</button>
-                <button type="submit" id="btn-confirm-delete" class="btn" style="flex: 1; background: var(--danger); color: white;">Excluir Conta</button>
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                <button type="button" onclick="document.getElementById('delete-account-modal').close()" style="flex: 1; background: var(--bg-color); color: var(--text-primary); padding: 1rem; border-radius: var(--radius-md); font-weight: 600; border: none; cursor: pointer;">Cancelar</button>
+                <button type="submit" id="btn-confirm-delete" style="flex: 1; background: var(--danger); color: white; padding: 1rem; border-radius: var(--radius-md); font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-trash-alt"></i> Excluir Tudo
+                </button>
             </div>
         </form>
     </dialog>

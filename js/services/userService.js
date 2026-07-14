@@ -54,9 +54,36 @@ class UserService {
 
     async deleteUser(uid) {
         try {
+            const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            
+            // 1. Deletar todos os workspaces e suas subcoleções
+            const workspacesRef = collection(db, 'workspaces');
+            const q = query(workspacesRef, where("ownerId", "==", uid));
+            const workspacesSnap = await getDocs(q);
+
+            for (const workspaceDoc of workspacesSnap.docs) {
+                const workspaceId = workspaceDoc.id;
+
+                // Transações
+                const txsSnap = await getDocs(collection(db, `workspaces/${workspaceId}/transactions`));
+                for (const tx of txsSnap.docs) await deleteDoc(tx.ref);
+
+                // Categorias
+                const catsSnap = await getDocs(collection(db, `workspaces/${workspaceId}/categories`));
+                for (const cat of catsSnap.docs) await deleteDoc(cat.ref);
+
+                // Carteiras
+                const walletsSnap = await getDocs(collection(db, `workspaces/${workspaceId}/wallets`));
+                for (const wallet of walletsSnap.docs) await deleteDoc(wallet.ref);
+
+                // Finalmente, o workspace
+                await deleteDoc(workspaceDoc.ref);
+            }
+
+            // 2. Deletar o documento do usuário
             const docRef = doc(db, 'users', uid);
             await deleteDoc(docRef);
-            logger.debug(`[Firestore] Usuário deletado: ${uid}`);
+            logger.debug(`[Firestore] Usuário e dados deletados: ${uid}`);
         } catch (error) {
             logger.error("Erro ao deletar usuário", error);
             throw error;

@@ -1,9 +1,10 @@
-const CACHE_NAME = 'dc-app-cache-v1';
+const CACHE_NAME = 'dc-app-cache-v2';
 
 // Recursos críticos para carregar o app em modo avião
 const urlsToCache = [
   './index.html',
   './manifest.json',
+  './logo.png',
   './css/base.css',
   './css/layout.css',
   './js/app.js',
@@ -17,7 +18,6 @@ const urlsToCache = [
   './js/infrastructure/firebase.js',
   './pages/login.html',
   './pages/dashboard.html'
-  // Outras páginas são cacheadas sob demanda ou podemos listar tudo aqui
 ];
 
 // Instalação do Service Worker (Baixa todos os arquivos vitais)

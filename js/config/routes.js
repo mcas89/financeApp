@@ -1300,6 +1300,8 @@ export const financeRoutes = {
                         const opt = document.createElement('option');
                         opt.value = cat.id;
                         opt.textContent = cat.name;
+                        opt.dataset.icon = cat.icon || 'fa-tag';
+                        opt.dataset.color = cat.color || '#94a3b8';
                         catSelect.appendChild(opt);
                     });
 
@@ -1346,6 +1348,8 @@ export const financeRoutes = {
                         const opt = document.createElement('option');
                         opt.value = w.id;
                         opt.textContent = w.name;
+                        opt.dataset.icon = w.type === 'credit_card' ? 'fa-credit-card' : 'fa-university';
+                        opt.dataset.color = w.type === 'credit_card' ? 'var(--primary)' : 'var(--success)';
                         walletSelect.appendChild(opt);
                     });
 
@@ -1371,6 +1375,35 @@ export const financeRoutes = {
                         walletSelect.dispatchEvent(new Event('change'));
                     }
                 };
+                
+                if (catSelect) {
+                    catSelect.addEventListener('change', (e) => {
+                        const opt = e.target.options[e.target.selectedIndex];
+                        if (!opt) return;
+                        document.getElementById('label-category').textContent = opt.text;
+                        const iconCat = document.querySelector('.icon-cat');
+                        if (iconCat) {
+                            iconCat.innerHTML = `<i class="fas ${opt.dataset.icon || 'fa-tag'}"></i>`;
+                            iconCat.style.color = opt.dataset.color || '#f59e0b';
+                            iconCat.style.background = `${opt.dataset.color || '#f59e0b'}20`;
+                        }
+                    });
+                }
+                
+                if (walletSelect) {
+                    walletSelect.addEventListener('change', (e) => {
+                        const opt = e.target.options[e.target.selectedIndex];
+                        if (!opt) return;
+                        document.getElementById('label-wallet').textContent = opt.text;
+                        const iconWal = document.querySelector('.icon-wal');
+                        if (iconWal) {
+                            iconWal.innerHTML = `<i class="fas ${opt.dataset.icon || 'fa-university'}"></i>`;
+                            iconWal.style.color = opt.dataset.color || '#3b82f6';
+                            iconWal.style.background = `${opt.dataset.color || '#3b82f6'}20`;
+                        }
+                    });
+                }
+
                 typeBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
                         typeBtns.forEach(b => b.classList.remove('active', 'expense', 'income'));

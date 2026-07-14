@@ -1,0 +1,107 @@
+<style>
+    .cat-card-premium {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .cat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-right: 1rem; }
+    .cat-details { flex: 1; }
+    .cat-name { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.1rem; }
+    .cat-type { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    .color-option { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: inline-block; border: 2px solid transparent; }
+    .color-option.selected { border-color: white; outline: 2px solid var(--primary); }
+    
+    .icon-option { width: 40px; height: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--border-color); color: var(--text-secondary); }
+    .icon-option.selected { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+    .tab-btn { flex: 1; border-radius: 20px; transition: all 0.2s; font-weight: 600; }
+    .tab-btn:not(.btn-primary) { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+</style>
+
+<div class="app-shell">
+    <header class="top-bar">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Categorias</h1>
+        <button class="icon-btn" id="btn-new-category">
+            <i class="fas fa-plus"></i>
+        </button>
+    </header>
+
+    <main class="content-area" style="padding: 1rem;">
+        
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;" id="cat-tabs">
+            <button class="btn btn-primary tab-btn" data-type="expense">Despesas</button>
+            <button class="btn tab-btn" data-type="income">Receitas</button>
+        </div>
+
+        <div id="categories-list">
+            <!-- Renderizado via JS -->
+             <div style="text-align:center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary)"></i>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO DE NOVA CATEGORIA (Escondido) -->
+        <div id="category-form-container" style="display: none; background: var(--surface-color); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+            <h3 style="margin-bottom: 1rem;" id="cat-form-title">Nova Categoria</h3>
+            <input type="hidden" id="cat-id" value="">
+            
+            <div class="input-group">
+                <label>Nome</label>
+                <input type="text" id="cat-name" placeholder="Ex: Transporte, Lazer..." style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+            </div>
+            
+            <div class="input-group" style="margin-top: 1rem;">
+                <label>Tipo</label>
+                <select id="cat-type" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                    <option value="expense">Despesa</option>
+                    <option value="income">Receita</option>
+                </select>
+            </div>
+
+            <div class="input-group" style="margin-top: 1rem;">
+                <label>Ícone</label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="cat-icon-selector">
+                    <div class="icon-option selected" data-value="fas fa-tags"><i class="fas fa-tags"></i></div>
+                    <div class="icon-option" data-value="fas fa-utensils"><i class="fas fa-utensils"></i></div>
+                    <div class="icon-option" data-value="fas fa-shopping-cart"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="icon-option" data-value="fas fa-car"><i class="fas fa-car"></i></div>
+                    <div class="icon-option" data-value="fas fa-home"><i class="fas fa-home"></i></div>
+                    <div class="icon-option" data-value="fas fa-graduation-cap"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="icon-option" data-value="fas fa-heartbeat"><i class="fas fa-heartbeat"></i></div>
+                    <div class="icon-option" data-value="fas fa-plane"><i class="fas fa-plane"></i></div>
+                    <div class="icon-option" data-value="fas fa-gamepad"><i class="fas fa-gamepad"></i></div>
+                    <div class="icon-option" data-value="fas fa-money-bill-wave"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="icon-option" data-value="fas fa-briefcase"><i class="fas fa-briefcase"></i></div>
+                    <div class="icon-option" data-value="fas fa-chart-line"><i class="fas fa-chart-line"></i></div>
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 1rem;">
+                <label>Cor Identificadora</label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="cat-color-selector">
+                    <div class="color-option selected" data-value="#8b5cf6" style="background: #8b5cf6;"></div>
+                    <div class="color-option" data-value="#3b82f6" style="background: #3b82f6;"></div>
+                    <div class="color-option" data-value="#10b981" style="background: #10b981;"></div>
+                    <div class="color-option" data-value="#f59e0b" style="background: #f59e0b;"></div>
+                    <div class="color-option" data-value="#ef4444" style="background: #ef4444;"></div>
+                    <div class="color-option" data-value="#ec4899" style="background: #ec4899;"></div>
+                    <div class="color-option" data-value="#6b7280" style="background: #6b7280;"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="btn" style="flex: 1; min-width: 120px; background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);" id="btn-cancel-cat">Cancelar</button>
+                <button class="btn btn-primary" style="flex: 1; min-width: 120px;" id="btn-save-cat">Salvar Categoria</button>
+            </div>
+        </div>
+    </main>
+</div>

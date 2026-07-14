@@ -1,0 +1,45 @@
+<div class="app-shell page-enter" style="background-color: var(--bg-color); min-height: 100vh;">
+    <header class="top-bar" style="background: var(--glass-bg); backdrop-filter: blur(20px);">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Metas de Gastos</h1>
+        <button class="icon-btn" id="btn-new-budget">
+            <i class="fas fa-plus"></i>
+        </button>
+    </header>
+
+    <main class="main-content">
+        <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1)); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid rgba(139, 92, 246, 0.2); margin-bottom: 2rem;">
+            <p style="font-size: 0.95rem; color: var(--text-primary); line-height: 1.5; margin: 0;">
+                Defina limites para cada categoria. O sistema monitora seus gastos do mês atual e avisa quando você estiver perto de estourar.
+            </p>
+        </div>
+
+        <div id="budgets-list">
+            <div style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary);"></i>
+            </div>
+        </div>
+    </main>
+
+    <dialog id="budget-modal" style="border: none; border-radius: var(--radius-lg); padding: 1.5rem; width: 90%; max-width: 400px; box-shadow: var(--shadow-lg); background: var(--surface-color); color: var(--text-primary); top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; position: fixed;">
+        <h3 style="margin-top: 0; margin-bottom: 1.5rem;">Definir Meta de Gasto</h3>
+        
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.25rem; display: block;">Categoria</label>
+        <select id="budget-category" style="width: 100%; height: 50px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary); padding: 0 1rem; margin-bottom: 1rem; outline: none; box-sizing: border-box; font-size: 1rem;">
+            <option value="">Carregando categorias...</option>
+        </select>
+        
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.25rem; display: block;">Limite de Gasto (R$)</label>
+        <input type="number" id="budget-limit" placeholder="Ex: 500,00" style="width: 100%; height: 50px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary); padding: 0 1rem; margin-bottom: 1rem; outline: none; box-sizing: border-box; font-size: 1rem;" />
+        
+        <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.25rem; display: block;">Avisar quando atingir (%)</label>
+        <input type="number" id="budget-warning" placeholder="Ex: 80" value="80" style="width: 100%; height: 50px; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary); padding: 0 1rem; margin-bottom: 1.5rem; outline: none; box-sizing: border-box; font-size: 1rem;" />
+        
+        <div style="display: flex; gap: 1rem;">
+            <button id="btn-close-budget" class="btn" style="flex: 1; background: var(--bg-color); color: var(--text-primary); border: 1px solid var(--border-color);">Cancelar</button>
+            <button id="btn-save-budget" class="btn" style="flex: 1;">Salvar</button>
+        </div>
+    </dialog>
+</div>

@@ -1,0 +1,139 @@
+<style>
+    .settings-section {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .settings-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .settings-link-card {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: var(--bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.2s;
+    }
+    .settings-link-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 1px var(--primary);
+    }
+    .sl-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+    .sl-details {
+        flex: 1;
+    }
+    .sl-title {
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+    .sl-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+</style>
+
+<div class="app-shell page-enter scrollable-area">
+    <header class="top-app-bar">
+        <button class="icon-btn" onclick="navigation.go('/dashboard')"><i class="fas fa-arrow-left"></i></button>
+        <h1 class="title">Configurações</h1>
+        <div style="width: 48px;"></div>
+    </header>
+
+    <main class="main-content" style="padding-top: 1.5rem;">
+        
+        <!-- ACESSOS RÁPIDOS -->
+        <section class="settings-section">
+            <h2 class="settings-title"><i class="fas fa-sliders-h"></i> Personalização & Ferramentas</h2>
+            
+            <a href="#/categories" class="settings-link-card">
+                <div class="sl-icon"><i class="fas fa-tags"></i></div>
+                <div class="sl-details">
+                    <div class="sl-title">Categorias</div>
+                    <div class="sl-desc">Gerencie suas categorias de receitas e despesas</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+            </a>
+
+            <a href="#/reports" class="settings-link-card">
+                <div class="sl-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="fas fa-brain"></i></div>
+                <div class="sl-details">
+                    <div class="sl-title">Inteligência & Relatórios</div>
+                    <div class="sl-desc">Score financeiro, insights e exportação de dados</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+            </a>
+        </section>
+
+        <!-- SOBRE -->
+        <section class="settings-section">
+            <h2 class="settings-title"><i class="fas fa-info-circle"></i> Sobre o App</h2>
+            
+            <div class="settings-link-card" onclick="document.getElementById('about-modal').showModal()">
+                <div class="sl-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fas fa-rocket"></i></div>
+                <div class="sl-details">
+                    <div class="sl-title">Sobre o FinanceApp</div>
+                    <div class="sl-desc">Versão, desenvolvedores e créditos do projeto</div>
+                </div>
+                <i class="fas fa-chevron-right" style="color: var(--text-secondary);"></i>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Sobre -->
+    <dialog id="about-modal" style="width: 90%; max-width: 400px; border: none; border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 0; box-shadow: var(--shadow-lg); mackdrop-filter: blur(5px); margin: auto;">
+        <div style="padding: 2rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color); background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));">
+            <img src="./financeApplogo.png" alt="FinanceApp" style="width: 120px; height: auto; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">FinanceApp</h2>
+            <span style="background: var(--primary); color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">Versão 1.0</span>
+        </div>
+        
+        <div style="padding: 1.5rem; text-align: left; font-size: 0.95rem; line-height: 1.6;">
+            <div style="margin-bottom: 1.5rem;">
+                <p style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Desenvolvimento</p>
+                <p style="font-weight: 600;"><i class="fas fa-laptop-code" style="color: var(--primary); width: 20px;"></i> Supertech Soluções em Tecnologia</p>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <p style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Equipe Principal</p>
+                <p style="margin-bottom: 0.5rem;"><i class="fas fa-code" style="color: var(--primary); width: 20px;"></i> <strong>Desenvolvedor Principal:</strong><br>Marcos Silva</p>
+                <p><i class="fas fa-lightbulb" style="color: #f59e0b; width: 20px;"></i> <strong>Ideia Principal:</strong><br>Carolina Costa</p>
+            </div>
+
+            <div>
+                <p style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.25rem;">Sobre o Projeto</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">O FinanceApp foi criado com o objetivo de simplificar a gestão financeira pessoal e empresarial, trazendo controle total com zero esforço.</p>
+            </div>
+        </div>
+        
+        <div style="padding: 1rem; border-top: 1px solid var(--border-color); text-align: center;">
+            <button class="btn" style="width: 100%; background: var(--bg-color); color: var(--text-primary); font-weight: 600; padding: 0.75rem; border-radius: var(--radius-md); cursor: pointer; border: 1px solid var(--border-color);" onclick="document.getElementById('about-modal').close()">Fechar</button>
+        </div>
+    </dialog>
+</div>

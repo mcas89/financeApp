@@ -1,0 +1,123 @@
+<style>
+    /* Premium Credit Card */
+    .credit-card-premium {
+        border-radius: 16px;
+        padding: 1.5rem;
+        color: white;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .credit-card-premium::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+    }
+    .cc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .cc-name { font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem; }
+    .cc-brand { font-size: 1.8rem; }
+    .cc-invoice-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 0.25rem; }
+    .cc-invoice-value { font-size: 2.2rem; font-weight: 800; font-family: var(--font-display); letter-spacing: -1px; margin-bottom: 1.5rem; }
+    .cc-limit-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 500; }
+    .cc-progress-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+    .cc-progress-fill { height: 100%; transition: width 0.5s ease; }
+
+    /* Premium Checking Account */
+    .account-card-premium {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .acc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; }
+    .acc-details { flex: 1; }
+    .acc-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.1rem; }
+    .acc-type { font-size: 0.8rem; color: var(--text-secondary); }
+    .acc-balance { font-weight: 800; font-size: 1.2rem; color: var(--text-primary); font-family: var(--font-display); }
+</style>
+
+<div class="app-shell">
+    <header class="top-bar">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Minhas Contas</h1>
+        <button class="icon-btn" id="btn-new-wallet">
+            <i class="fas fa-plus"></i>
+        </button>
+    </header>
+
+    <main class="content-area" style="padding: 1rem;">
+        <div id="wallets-list">
+            <!-- Renderizado via JS -->
+            <div style="text-align:center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary)"></i>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO DE NOVA CARTEIRA (Escondido por padrão) -->
+        <div id="wallet-form-container" style="display: none; background: var(--surface-color); padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 1rem; border: 1px solid var(--border-color);">
+            <h3 style="margin-bottom: 1rem;">Nova Conta</h3>
+            
+            <div class="input-group">
+                <label>Tipo de Conta</label>
+                <select id="wallet-type" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                    <option value="checking_account">Conta Corrente / PIX</option>
+                    <option value="cash">Dinheiro em Espécie</option>
+                    <option value="credit_card">Cartão de Crédito</option>
+                    <option value="investment">Investimento</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Nome da Conta</label>
+                <input type="text" id="wallet-name" placeholder="Ex: Nubank, Carteira Física..." style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+            </div>
+
+            <div class="input-group">
+                <label>Saldo Atual / Inicial</label>
+                <input type="number" id="wallet-balance" placeholder="R$ 0,00" value="0" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+            </div>
+
+            <!-- Campos Específicos de Cartão de Crédito -->
+            <div id="credit-card-fields" style="display: none; background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                <div class="input-group">
+                    <label>Limite do Cartão</label>
+                    <input type="number" id="cc-limit" placeholder="R$ 5000,00" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                </div>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <div class="input-group" style="flex: 1; min-width: 120px;">
+                        <label>Fechamento</label>
+                        <input type="number" id="cc-closing" placeholder="Ex: 25" min="1" max="31" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                    </div>
+                    <div class="input-group" style="flex: 1; min-width: 120px;">
+                        <label>Vencimento</label>
+                        <input type="number" id="cc-due" placeholder="Ex: 5" min="1" max="31" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                    </div>
+                </div>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label>Compras no dia do fechamento caem na fatura:</label>
+                    <select id="cc-closing-rule" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                        <option value="next">Próxima Fatura (Padrão)</option>
+                        <option value="current">Fatura Atual</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                <button class="btn" style="flex: 1; min-width: 120px; background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);" id="btn-cancel-wallet">Cancelar</button>
+                <button class="btn btn-primary" style="flex: 1; min-width: 120px;" id="btn-save-wallet">Salvar</button>
+            </div>
+        </div>
+    </main>
+</div>

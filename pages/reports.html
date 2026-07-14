@@ -1,0 +1,225 @@
+<style>
+    .format-label {
+        flex: 1; 
+        border: 2px solid var(--border-color); 
+        padding: 1rem; 
+        border-radius: var(--radius-md); 
+        text-align: center; 
+        cursor: pointer; 
+        background: var(--surface-color);
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .format-label.selected {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+    input[type="radio"]:checked + .format-label {
+        border-color: var(--primary);
+        background: var(--primary-light);
+    }
+    
+    /* Print Styles */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #print-area, #print-area * {
+            visibility: visible;
+        }
+        #print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white !important;
+            color: black !important;
+        }
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .print-table th, .print-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .print-table th {
+            background-color: #f2f2f2;
+        }
+        .income-text { color: #16a34a !important; }
+        .expense-text { color: #dc2626 !important; }
+    }
+
+    /* Score Radial */
+    .score-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .score-circle {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1rem;
+    }
+    .score-circle svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+    }
+    .score-circle circle {
+        fill: transparent;
+        stroke-width: 8;
+        stroke-linecap: round;
+    }
+    .score-circle .bg {
+        stroke: var(--border-color);
+    }
+    .score-circle .progress {
+        stroke: var(--primary);
+        stroke-dasharray: 314; /* 2 * PI * R (50) */
+        stroke-dashoffset: 314;
+        transition: stroke-dashoffset 1s ease-out;
+    }
+    .score-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+    }
+    .score-label {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-top: -0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Insights Box */
+    .insights-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    .insight-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .insight-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1.1rem;
+    }
+    .insight-warning .insight-icon { background: rgba(245,158,11,0.1); color: #f59e0b; }
+    .insight-alert .insight-icon { background: rgba(239,68,68,0.1); color: #ef4444; }
+    .insight-success .insight-icon { background: rgba(16,185,129,0.1); color: #10b981; }
+    .insight-info .insight-icon { background: rgba(59,130,246,0.1); color: #3b82f6; }
+    
+    .insight-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    .insight-text {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+</style>
+
+<div class="app-shell page-enter scrollable-area">
+    <!-- Top Bar -->
+    <header class="top-app-bar">
+        <button class="icon-btn" onclick="navigation.go('/dashboard')"><i class="fas fa-arrow-left"></i></button>
+        <h1 class="title">Inteligência</h1>
+        <div style="width: 48px;"></div>
+    </header>
+
+    <main class="main-content" style="padding-top: 1.5rem;">
+        
+        <!-- Score Financeiro -->
+        <div class="score-container animate-fade-up">
+            <div class="score-circle">
+                <svg viewBox="0 0 110 110">
+                    <circle class="bg" cx="55" cy="55" r="50"></circle>
+                    <circle class="progress" cx="55" cy="55" r="50" id="score-ring"></circle>
+                </svg>
+                <div class="score-value" id="score-text">--</div>
+            </div>
+            <div class="score-label">Score Financeiro</div>
+            <p id="score-desc" style="text-align: center; font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.75rem;">Calculando sua saúde financeira...</p>
+        </div>
+
+        <!-- Insights -->
+        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--text-primary);"><i class="fas fa-brain" style="color: var(--primary); margin-right: 0.5rem;"></i> FinanceApp Insights</h3>
+        <div class="insights-list animate-fade-up delay-1" id="reports-insights-list">
+            <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                <div class="spinner" style="margin: 0 auto 1rem;"></div>
+                <p>Analisando dados...</p>
+            </div>
+        </div>
+
+        <h3 style="font-size: 1.1rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);"><i class="fas fa-file-export" style="color: var(--primary); margin-right: 0.5rem;"></i> Exportar Relatório</h3>
+        <div class="hero-card animate-fade-up delay-2" style="background: linear-gradient(135deg, var(--primary), #3b82f6); margin-bottom: 1.5rem; padding: 1.5rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-file-export" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.9;"></i>
+                <h2 style="font-size: 1.25rem;">Exportar Dados</h2>
+                <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 0.5rem;">Gere relatórios completos para Excel ou salve em PDF.</p>
+            </div>
+        </div>
+
+        <form id="export-form" class="animate-fade-up delay-1">
+            <div class="input-group">
+                <label>Mês e Ano</label>
+                <input type="month" id="report-month" required>
+            </div>
+            
+            <div class="input-group" style="margin-top: 1.5rem;">
+                <label>Formato do Arquivo</label>
+                <div style="display: flex; gap: 1rem;" id="format-options">
+                    <label class="format-label selected">
+                        <input type="radio" name="report-format" value="csv" checked style="display:none;">
+                        <i class="fas fa-file-excel" style="font-size: 1.5rem; color: #10b981; margin-bottom: 0.5rem; display:block;"></i>
+                        <span style="font-weight: 600; color: var(--text-primary);">Excel (CSV)</span>
+                    </label>
+                    <label class="format-label">
+                        <input type="radio" name="report-format" value="pdf" style="display:none;">
+                        <i class="fas fa-file-pdf" style="font-size: 1.5rem; color: #ef4444; margin-bottom: 0.5rem; display:block;"></i>
+                        <span style="font-weight: 600; color: var(--text-primary);">Documento (PDF)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 2rem; padding: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i class="fas fa-download"></i> <span id="export-btn-text">Gerar Relatório</span>
+            </button>
+        </form>
+    </main>
+</div>
+
+<!-- Área de Impressão (invisível em tela normal, mostrada apenas no @media print) -->
+<div id="print-area" style="display: none;"></div>

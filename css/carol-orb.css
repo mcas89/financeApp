@@ -1,0 +1,224 @@
+/* CarolOrb - A Identidade Visual da Carol IA */
+
+.carol-orb {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    --orb-color: #8b5cf6;
+    --orb-glow-color: rgba(139, 92, 246, 0.4);
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* O núcleo central */
+.orb-core {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    /* Efeito premium: centro iluminado, bordas coloridas */
+    background: radial-gradient(circle at 35% 35%, #ffffff 0%, var(--orb-color) 60%, #000000 120%);
+    box-shadow: inset -2px -2px 4px rgba(0,0,0,0.3);
+    z-index: 3;
+    transition: background 0.6s ease;
+    will-change: transform;
+}
+
+/* O brilho externo (Glow) */
+.orb-glow {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--orb-color);
+    filter: blur(8px);
+    opacity: 0.6;
+    z-index: 1;
+    transition: background 0.6s ease, filter 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity, filter;
+}
+
+/* Halo translúcido ao redor */
+.orb-halo {
+    position: absolute;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--orb-color);
+    opacity: 0.3;
+    z-index: 2;
+    transition: border-color 0.6s ease, opacity 0.6s ease, transform 0.6s ease;
+    will-change: transform, opacity;
+}
+
+/* Container de partículas */
+.orb-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    animation: orb-orbit 8s linear infinite;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.orb-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 0 3px #ffffff, 0 0 6px var(--orb-color);
+    opacity: 0.8;
+}
+
+.orb-p1 { top: 4px; left: 50%; transform: translateX(-50%); }
+.orb-p2 { bottom: 8px; right: 4px; }
+.orb-p3 { bottom: 8px; left: 4px; width: 2px; height: 2px; }
+
+/* Animações CSS Base (Sem Reflow) */
+@keyframes orb-orbit {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes orb-breathe {
+    0%, 100% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes orb-pulse-fast {
+    0%, 100% { transform: scale(0.95); }
+    50% { transform: scale(1.15); }
+}
+
+@keyframes orb-shake {
+    0%, 100% { transform: translateX(0) scale(1); }
+    25% { transform: translateX(-2px) scale(1.05); }
+    75% { transform: translateX(2px) scale(1.05); }
+}
+
+@keyframes orb-wave {
+    0% { transform: scale(0.8); opacity: 0.8; border-width: 2px; }
+    100% { transform: scale(1.8); opacity: 0; border-width: 0px; }
+}
+
+/* ========================================================= */
+/* ESTADOS DO ORBE                                           */
+/* ========================================================= */
+
+/* IDLE (Padrão) */
+.carol-orb.state-idle {
+    --orb-color: #8b5cf6;
+    --orb-glow-color: rgba(139, 92, 246, 0.4);
+}
+.carol-orb.state-idle .orb-core, .carol-orb.state-idle .orb-halo {
+    animation: orb-breathe 4s ease-in-out infinite;
+}
+
+/* THINKING (Pensando/Analisando) */
+.carol-orb.state-thinking {
+    --orb-color: #6366f1; /* Azul arroxeado */
+    --orb-glow-color: rgba(99, 102, 241, 0.6);
+}
+.carol-orb.state-thinking .orb-particles {
+    animation: orb-orbit 3s linear infinite;
+}
+.carol-orb.state-thinking .orb-core {
+    animation: orb-breathe 2s ease-in-out infinite;
+}
+.carol-orb.state-thinking .orb-glow {
+    filter: blur(10px);
+    opacity: 0.8;
+}
+
+/* EDUCATION (Dicas) */
+.carol-orb.state-education {
+    --orb-color: #10b981; /* Verde */
+}
+.carol-orb.state-education .orb-core, .carol-orb.state-education .orb-halo {
+    animation: orb-breathe 5s ease-in-out infinite;
+}
+.carol-orb.state-education .orb-halo {
+    transform: scale(1.1);
+    opacity: 0.2;
+}
+
+/* OPPORTUNITY (Oportunidade) */
+.carol-orb.state-opportunity {
+    --orb-color: #3b82f6; /* Azul */
+}
+.carol-orb.state-opportunity .orb-particles {
+    animation: orb-orbit 4s linear infinite;
+}
+.carol-orb.state-opportunity .orb-core {
+    animation: orb-breathe 3s ease-in-out infinite;
+}
+
+/* ATTENTION (Atenção) */
+.carol-orb.state-attention {
+    --orb-color: #f59e0b; /* Laranja */
+}
+.carol-orb.state-attention .orb-core, .carol-orb.state-attention .orb-glow {
+    animation: orb-pulse-fast 1.5s ease-in-out infinite;
+}
+.carol-orb.state-attention .orb-halo {
+    opacity: 0.6;
+    transform: scale(1.15);
+}
+
+/* CRITICAL (Crítico) */
+.carol-orb.state-critical {
+    --orb-color: #ef4444; /* Vermelho */
+}
+.carol-orb.state-critical .orb-core, .carol-orb.state-critical .orb-glow {
+    animation: orb-pulse-fast 0.8s ease-in-out infinite;
+}
+.carol-orb.state-critical .orb-halo {
+    border-width: 2px;
+    opacity: 0.8;
+}
+.carol-orb.state-critical .orb-particles {
+    animation: orb-orbit 2s linear infinite;
+}
+.carol-orb.state-critical .orb-particle {
+    background: #ffcccc;
+}
+
+/* MOTIVATION (Motivação) */
+.carol-orb.state-motivation {
+    --orb-color: #a855f7; /* Roxo claro/Pink */
+}
+.carol-orb.state-motivation .orb-core, .carol-orb.state-motivation .orb-halo {
+    animation: orb-breathe 3s ease-in-out infinite;
+}
+.carol-orb.state-motivation .orb-glow {
+    filter: blur(10px);
+    opacity: 0.7;
+}
+
+/* ========================================================= */
+/* EVENTOS INSTANTÂNEOS (Dinâmicos)                          */
+/* ========================================================= */
+
+.carol-orb.anim-pulse .orb-core {
+    transform: scale(1.3) !important;
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+.carol-orb.anim-pulse .orb-glow {
+    filter: blur(14px) !important;
+    opacity: 1 !important;
+    transform: scale(1.3) !important;
+    transition: all 0.15s ease !important;
+}
+
+.carol-orb.anim-shake {
+    animation: orb-shake 0.4s ease-in-out;
+}
+
+.carol-orb.anim-celebrate .orb-halo {
+    animation: orb-wave 0.8s ease-out;
+}

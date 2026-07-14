@@ -1,0 +1,97 @@
+<style>
+    .account-card-premium {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 1.25rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+    .acc-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 1rem; }
+    .acc-details { flex: 1; }
+    .acc-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.1rem; }
+    .acc-type { font-size: 0.8rem; color: var(--text-secondary); }
+    .acc-balance { font-weight: 800; font-size: 1.2rem; color: var(--text-primary); font-family: var(--font-display); }
+    
+    .color-option { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: inline-block; border: 2px solid transparent; }
+    .color-option.selected { border-color: white; outline: 2px solid var(--primary); }
+    
+    .icon-option { width: 40px; height: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 1px solid var(--border-color); color: var(--text-secondary); }
+    .icon-option.selected { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+</style>
+
+<div class="app-shell">
+    <header class="top-bar">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Contas</h1>
+        <button class="icon-btn" id="btn-new-account">
+            <i class="fas fa-plus"></i>
+        </button>
+    </header>
+
+    <main class="content-area" style="padding: 1rem;">
+        <div id="accounts-list">
+            <div style="text-align:center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary)"></i>
+            </div>
+        </div>
+
+        <div id="account-form-container" style="display: none; background: var(--surface-color); padding: 1.5rem; border-radius: var(--radius-lg); margin-top: 1rem; border: 1px solid var(--border-color);">
+            <h3 style="margin-bottom: 1rem;" id="acc-form-title">Nova Conta</h3>
+            <input type="hidden" id="acc-id" value="">
+            
+            <div class="input-group">
+                <label>Tipo de Conta</label>
+                <select id="acc-type" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+                    <option value="checking_account">Conta Corrente / PIX</option>
+                    <option value="savings">Conta Poupança</option>
+                    <option value="cash">Dinheiro em Espécie</option>
+                    <option value="investment">Investimento</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Nome da Conta</label>
+                <input type="text" id="acc-name" placeholder="Ex: Nubank, Carteira Física..." style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+            </div>
+
+            <div class="input-group">
+                <label>Saldo Atual / Inicial</label>
+                <input type="number" id="acc-balance" placeholder="R$ 0,00" value="0" style="width: 100%; padding: 0.8rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-primary);">
+            </div>
+
+            <div class="input-group">
+                <label>Ícone</label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="acc-icon-selector">
+                    <div class="icon-option selected" data-value="fas fa-university"><i class="fas fa-university"></i></div>
+                    <div class="icon-option" data-value="fas fa-wallet"><i class="fas fa-wallet"></i></div>
+                    <div class="icon-option" data-value="fas fa-piggy-bank"><i class="fas fa-piggy-bank"></i></div>
+                    <div class="icon-option" data-value="fas fa-money-bill-wave"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="icon-option" data-value="fas fa-chart-line"><i class="fas fa-chart-line"></i></div>
+                    <div class="icon-option" data-value="fab fa-bitcoin"><i class="fab fa-bitcoin"></i></div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Cor Identificadora</label>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="acc-color-selector">
+                    <div class="color-option selected" data-value="#8b5cf6" style="background: #8b5cf6;"></div>
+                    <div class="color-option" data-value="#3b82f6" style="background: #3b82f6;"></div>
+                    <div class="color-option" data-value="#10b981" style="background: #10b981;"></div>
+                    <div class="color-option" data-value="#f59e0b" style="background: #f59e0b;"></div>
+                    <div class="color-option" data-value="#ef4444" style="background: #ef4444;"></div>
+                    <div class="color-option" data-value="#6b7280" style="background: #6b7280;"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
+                <button class="btn" style="flex: 1; min-width: 120px; background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);" id="btn-cancel-account">Cancelar</button>
+                <button class="btn btn-primary" style="flex: 1; min-width: 120px;" id="btn-save-account">Salvar</button>
+            </div>
+        </div>
+    </main>
+</div>

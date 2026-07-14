@@ -1,0 +1,177 @@
+<style>
+    .auth-page {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: var(--bg-color);
+        padding: 0.5rem 1.5rem 2rem;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--surface-color);
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 0.5rem;
+        transition: transform 0.2s, background 0.2s;
+    }
+
+    .back-btn:active {
+        transform: scale(0.9);
+        background: var(--bg-color);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: slideUp 0.5s ease;
+    }
+
+    .auth-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .auth-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .auth-card {
+        background: var(--surface-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+        animation: slideUp 0.6s ease;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .input-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .input-wrapper label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-icon-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon-box i.left-icon {
+        position: absolute;
+        left: 1rem;
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
+
+    .input-icon-box input {
+        width: 100%;
+        height: 56px;
+        background: var(--bg-color);
+        border: 1.5px solid transparent;
+        border-radius: var(--radius-md);
+        padding: 0 1rem 0 3rem;
+        font-size: 1.05rem;
+        color: var(--text-primary);
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .input-icon-box input.has-eye {
+        padding-right: 3rem;
+    }
+
+    .input-icon-box input:focus {
+        outline: none;
+        background: var(--surface-color);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .eye-btn {
+        position: absolute;
+        right: 0.5rem;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .eye-btn:active {
+        color: var(--primary);
+    }
+
+    .auth-submit-area {
+        margin-top: auto;
+        padding-top: 2rem;
+    }
+</style>
+
+<div class="auth-page">
+    <a href="/welcome" data-link class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="auth-header">
+        <h1>Bem-vindo de volta!</h1>
+        <p>Sentimos sua falta.</p>
+    </div>
+    
+    <div class="auth-card">
+        <form id="login-form" style="display: flex; flex-direction: column; flex: 1;">
+            
+            <div class="input-wrapper" id="email-group">
+                <label>E-mail</label>
+                <div class="input-icon-box">
+                    <i class="fas fa-envelope left-icon"></i>
+                    <input type="email" id="email" required placeholder="seu@email.com">
+                </div>
+            </div>
+            
+            <div class="input-wrapper" id="password-group">
+                <label>Senha</label>
+                <div class="input-icon-box">
+                    <i class="fas fa-lock left-icon"></i>
+                    <input type="password" id="password" class="has-eye" required placeholder="Sua senha secreta">
+                    <button type="button" class="eye-btn" data-target="password">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="auth-submit-area">
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 56px; font-size: 1.1rem;">Entrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

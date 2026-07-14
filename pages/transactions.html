@@ -1,0 +1,261 @@
+<style>
+    .search-bar-container {
+        padding: 1rem;
+        background: var(--bg-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 0.5rem 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .search-input-wrapper input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-primary);
+        font-size: 1rem;
+        outline: none;
+        padding-left: 0.75rem;
+    }
+    
+    .search-input-wrapper i.fa-search {
+        color: var(--text-secondary);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+    
+    .filter-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 0.5rem;
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+    }
+
+    .chips-container {
+        display: flex;
+        gap: 0.5rem;
+        overflow-x: auto;
+        padding: 0.75rem 1rem;
+        background: var(--bg-color);
+        scrollbar-width: none;
+    }
+    .chips-container::-webkit-scrollbar { display: none; }
+    
+    .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(139, 92, 246, 0.15);
+        color: var(--primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .filter-chip i { cursor: pointer; }
+
+    /* Bottom Sheets */
+    .bottom-sheet {
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        background: var(--surface-color);
+        border-top-left-radius: var(--radius-lg);
+        border-top-right-radius: var(--radius-lg);
+        z-index: 1000;
+        padding: 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    .bottom-sheet.open {
+        bottom: 0;
+    }
+    
+    .sheet-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        display: none;
+        backdrop-filter: blur(2px);
+    }
+    .sheet-overlay.open { display: block; }
+    
+    .sheet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .sheet-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+</style>
+
+<div class="app-shell page-enter">
+    <header class="top-bar" style="background: var(--glass-bg); backdrop-filter: blur(20px);">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Extrato</h1>
+        <button class="icon-btn" onclick="navigation.go('/transactions/new')">
+            <i class="fas fa-plus"></i>
+        </button>
+    </header>
+
+    <div class="search-bar-container">
+        <div class="search-input-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="tx-search-input" placeholder="Pesquisar transação...">
+        </div>
+        <div class="filter-actions">
+            <button class="filter-btn" onclick="document.getElementById('sheet-filter').classList.add('open'); document.getElementById('sheet-overlay').classList.add('open');">
+                <i class="fas fa-sliders-h"></i> Filtros
+            </button>
+            <button class="filter-btn" onclick="document.getElementById('sheet-sort').classList.add('open'); document.getElementById('sheet-overlay').classList.add('open');">
+                <i class="fas fa-sort-amount-down"></i> Ordenar
+            </button>
+        </div>
+    </div>
+
+    <div class="chips-container" id="chips-container">
+        <!-- Chips injetados dinamicamente -->
+    </div>
+
+    <main class="content-area" style="padding: 0 1rem 2rem; background-color: var(--bg-color);">
+        <div id="transactions-list">
+            <div style="text-align:center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin fa-2x" style="color: var(--primary)"></i>
+            </div>
+        </div>
+    </main>
+
+    <!-- Overlay Global para Sheets -->
+    <div class="sheet-overlay" id="sheet-overlay" onclick="document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open')); this.classList.remove('open');"></div>
+
+    <!-- Bottom Sheet: Ordenação -->
+    <div class="bottom-sheet" id="sheet-sort">
+        <div class="sheet-header">
+            <div class="sheet-title">Ordenar por</div>
+            <i class="fas fa-times" onclick="document.getElementById('sheet-sort').classList.remove('open'); document.getElementById('sheet-overlay').classList.remove('open');" style="cursor:pointer; font-size: 1.25rem; color: var(--text-secondary);"></i>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1rem;" id="sort-radios-container">
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="date_desc" checked> Mais recente
+            </label>
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="date_asc"> Mais antigo
+            </label>
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="val_desc"> Maior valor
+            </label>
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="val_asc"> Menor valor
+            </label>
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="az"> A-Z
+            </label>
+            <label style="display: flex; align-items: center; gap: 1rem; font-weight: 500;">
+                <input type="radio" name="tx_sort" value="za"> Z-A
+            </label>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet: Filtros -->
+    <div class="bottom-sheet" id="sheet-filter">
+        <div class="sheet-header">
+            <div class="sheet-title">Filtros Avançados</div>
+            <i class="fas fa-times" onclick="document.getElementById('sheet-filter').classList.remove('open'); document.getElementById('sheet-overlay').classList.remove('open');" style="cursor:pointer; font-size: 1.25rem; color: var(--text-secondary);"></i>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">Período</label>
+                <select id="filter-period" class="input-field">
+                    <option value="all">Todo o período</option>
+                    <option value="today">Hoje</option>
+                    <option value="week">Esta Semana</option>
+                    <option value="month" selected>Este Mês</option>
+                    <option value="year">Este Ano</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">Tipo</label>
+                <select id="filter-type" class="input-field">
+                    <option value="all">Todos</option>
+                    <option value="income">Receitas</option>
+                    <option value="expense">Despesas</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">Status</label>
+                <select id="filter-status" class="input-field">
+                    <option value="all">Todos</option>
+                    <option value="paid">Efetivados (Pagos/Recebidos)</option>
+                    <option value="pending">Pendentes</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">Categoria</label>
+                <select id="filter-category" class="input-field">
+                    <option value="all">Todas as categorias</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem; display: block;">Conta / Cartão</label>
+                <select id="filter-wallet" class="input-field">
+                    <option value="all">Todas as origens</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" id="btn-apply-filters" style="margin-top: 1rem; width: 100%;">Aplicar Filtros</button>
+        </div>
+    </div>
+
+    <!-- Bottom Sheet: Detalhes de Parcelas -->
+    <div class="bottom-sheet" id="sheet-installments">
+        <div class="sheet-header">
+            <div class="sheet-title">Gerenciar Parcelas</div>
+            <i class="fas fa-times" onclick="document.getElementById('sheet-installments').classList.remove('open'); document.getElementById('sheet-overlay').classList.remove('open');" style="cursor:pointer; font-size: 1.25rem; color: var(--text-secondary);"></i>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Selecione as parcelas futuras que deseja antecipar para a fatura atual (ou pagar avulso).</p>
+        <div id="installments-list-container" style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; max-height: 50vh; overflow-y: auto;">
+            <!-- Injetado via JS -->
+        </div>
+        <button class="btn btn-primary" id="btn-anticipate-installments" style="width: 100%;">Antecipar Selecionadas</button>
+    </div>
+</div>

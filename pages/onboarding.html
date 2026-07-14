@@ -1,0 +1,319 @@
+<style>
+    .wizard-page {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: var(--bg-color);
+        padding: 1rem 1.5rem 2rem;
+    }
+
+    .wizard-step {
+        display: none;
+        flex-direction: column;
+        flex: 1;
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    .wizard-step.active {
+        display: flex;
+    }
+
+    .wizard-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        margin-top: 2rem;
+    }
+
+    .wizard-header h1 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .wizard-header p {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        line-height: 1.5;
+        max-width: 90%;
+        margin: 0 auto;
+    }
+
+    /* Cards de Escolha (Step 1) */
+    .choice-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .choice-card {
+        background: var(--surface-color);
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.25rem 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .choice-card:hover {
+        border-color: var(--primary-light);
+        background: var(--surface-color);
+        transform: translateY(-2px);
+    }
+
+    .choice-card.selected {
+        border-color: var(--primary);
+        background: rgba(139, 92, 246, 0.05);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.15);
+    }
+
+    .choice-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: var(--bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        transition: all 0.2s;
+    }
+
+    .choice-card.selected .choice-icon {
+        background: var(--primary);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .choice-text h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.2rem;
+    }
+
+    .choice-text p {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+
+    /* Inputs Premium (Step 2) */
+    .wizard-card {
+        background: var(--surface-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border-color);
+    }
+
+    .input-wrapper {
+        margin-bottom: 2rem;
+    }
+    
+    .input-wrapper label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .input-box input {
+        width: 100%;
+        height: 56px;
+        background: var(--bg-color);
+        border: 2px solid transparent;
+        border-radius: var(--radius-md);
+        padding: 0 1.25rem;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .input-box input:focus {
+        outline: none;
+        background: var(--surface-color);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    /* Emoji Picker */
+    .emoji-grid {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .emoji-option {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: var(--bg-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .emoji-option.selected {
+        border-color: var(--primary);
+        background: rgba(139, 92, 246, 0.1);
+        transform: scale(1.1);
+    }
+
+    /* Footer Buttons */
+    .wizard-footer {
+        margin-top: auto;
+        padding-top: 2rem;
+    }
+
+    .btn-wizard {
+        width: 100%;
+        height: 56px;
+        font-size: 1.15rem;
+        font-weight: 700;
+        border-radius: var(--radius-full);
+        background: linear-gradient(135deg, var(--primary), #6d28d9);
+        color: white;
+        border: none;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn-wizard:active:not(:disabled) {
+        transform: scale(0.96);
+    }
+
+    .btn-wizard:disabled {
+        opacity: 0.5;
+        background: var(--text-secondary);
+        box-shadow: none;
+    }
+
+    .back-nav {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--surface-color);
+        color: var(--text-primary);
+        font-size: 1.25rem;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1rem;
+    }
+
+    @keyframes slideUpFade {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes successPop {
+        0% { transform: scale(0.5); opacity: 0; }
+        60% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+</style>
+
+<div class="wizard-page">
+    
+    <!-- STEP 1: Intro / Setup type -->
+    <div id="step-1" class="wizard-step active">
+        <div class="step-content active" id="step-0">
+            <h1 style="color: var(--primary);">Bem-vindo, <span class="user-display-name">...</span> 👋</h1>
+            <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 2rem;">Para começarmos, qual é o seu objetivo principal com o FinanceApp?</p>
+        </div>
+        
+        <div class="choice-grid">
+            <div class="choice-card" onclick="selectType(this, 'pessoal')">
+                <div class="choice-icon"><i class="fas fa-user"></i></div>
+                <div class="choice-text">
+                    <h3>Uso Pessoal</h3>
+                    <p>Quero controlar minhas contas</p>
+                </div>
+            </div>
+            
+            <div class="choice-card" onclick="selectType(this, 'casal')">
+                <div class="choice-icon"><i class="fas fa-user-friends"></i></div>
+                <div class="choice-text">
+                    <h3>Casal / Casa</h3>
+                    <p>Quero controlar minha casa</p>
+                </div>
+            </div>
+            
+            <div class="choice-card" onclick="selectType(this, 'empresa')">
+                <div class="choice-icon"><i class="fas fa-briefcase"></i></div>
+                <div class="choice-text">
+                    <h3>Empresa</h3>
+                    <p>Quero controlar meus negócios</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-footer">
+            <button class="btn-wizard" onclick="nextStep(2)" id="btn-step-1" disabled>Continuar</button>
+        </div>
+    </div>
+
+    <!-- STEP 2: Name & Visuals (Sem cores) -->
+    <div id="step-2" class="wizard-step">
+        <div style="margin-top: 1rem;">
+            <a href="#" onclick="nextStep(1)" class="back-nav"><i class="fas fa-arrow-left"></i></a>
+        </div>
+        
+        <div class="wizard-header" style="margin-top: 1rem; margin-bottom: 2rem;">
+            <h1>Seu Novo Cofre</h1>
+            <p>Dê um nome e escolha um ícone para identificar seu espaço financeiro.</p>
+        </div>
+        
+        <div class="wizard-card">
+            <div class="input-wrapper">
+                <label>Nome do Espaço</label>
+                <div class="input-box">
+                    <input type="text" id="ws-name" placeholder="Ex: Finanças da Casa" oninput="checkStep2()">
+                </div>
+            </div>
+
+            <div class="input-wrapper" style="margin-bottom: 0;">
+                <label>Escolha um Ícone</label>
+                <div class="emoji-grid" id="emoji-list">
+                    <div class="emoji-option selected" onclick="selectEmoji(this, 'fas fa-home')"><i class="fas fa-home"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-coins')"><i class="fas fa-coins"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-rocket')"><i class="fas fa-rocket"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-briefcase')"><i class="fas fa-briefcase"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-bullseye')"><i class="fas fa-bullseye"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-bolt')"><i class="fas fa-bolt"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-gem')"><i class="fas fa-gem"></i></div>
+                    <div class="emoji-option" onclick="selectEmoji(this, 'fas fa-university')"><i class="fas fa-university"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="wizard-footer">
+            <button class="btn-wizard" onclick="finishWizard()" id="btn-step-2" disabled>Criar Meu Espaço</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: Success Animation -->
+    <div id="step-3" class="wizard-step" style="align-items: center; justify-content: center; text-align: center;">
+        <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2 style="font-size: 1.8rem; margin-bottom: 0.75rem; color: var(--text-primary); font-weight: 800;">Tudo Pronto!</h2>
+        <p style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.5;">Seu espaço foi criado com sucesso.<br>Vamos organizar sua vida.</p>
+    </div>
+</div>

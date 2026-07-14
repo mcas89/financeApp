@@ -1,0 +1,294 @@
+<style>
+    .app-shell::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle at 50% 30%, var(--primary-light), transparent 50%),
+                    radial-gradient(circle at 80% 10%, rgba(16, 185, 129, 0.05), transparent 40%);
+        z-index: 0;
+        pointer-events: none;
+    }
+    main {
+        position: relative;
+        z-index: 1;
+        padding-bottom: 120px; /* Espaço pro FAB e Nav */
+    }
+    
+    .dashboard-header {
+        padding: 1rem 1.5rem 1.5rem;
+        background: transparent;
+    }
+    .balance-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        margin-top: 1rem;
+    }
+    .main-balance {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin: 0.25rem 0;
+        line-height: 1.1;
+    }
+    
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding: 0 1.5rem;
+    }
+    .summary-card {
+        background: var(--surface-color);
+        padding: 1.25rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .summary-card:active { transform: scale(0.96); }
+    
+    .summary-card.income .icon { color: var(--success); background: var(--success-bg); }
+    .summary-card.expense .icon { color: var(--danger); background: var(--danger-bg); }
+    
+    .summary-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+    
+    .summary-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .summary-value {
+        font-size: 1.25rem;
+        font-family: var(--font-display);
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-top: 0.25rem;
+    }
+
+    .recent-section {
+        padding: 2rem 1.5rem;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+    
+    .view-all {
+        font-size: 0.875rem;
+        color: var(--primary);
+        font-weight: 600;
+        cursor: pointer;
+    }
+    
+    .skeleton {
+        background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+        color: transparent !important;
+    }
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+
+<div class="app-shell page-enter scrollable-area">
+    <main>
+        <!-- Novo Global Header Premium -->
+        <header class="global-header">
+            <div class="header-profile" onclick="navigation.go('/profile')" style="cursor: pointer;">
+                <div class="avatar"><i class="fas fa-user"></i></div>
+                <div class="header-text">
+                    <h3>Bem-vindo(a)</h3>
+                    <h2 class="user-display-name">...</h2>
+                </div>
+            </div>
+            <div class="header-actions" style="display: flex; align-items: center; gap: 0.5rem;">
+                <button class="icon-btn" id="btn-notifications" style="position: relative;">
+                    <i class="fas fa-bell"></i>
+                    <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #ef4444; color: #ffffff; font-size: 0.7rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 0 8px rgba(239,68,68,0.8); z-index: 10;"></span>
+                </button>
+                <button class="icon-btn" id="menu-btn" onclick="document.getElementById('drawer').classList.toggle('open'); document.getElementById('drawer-overlay').classList.toggle('open');" style="background: transparent; border: none; box-shadow: none; font-size: 1.5rem; color: var(--text-primary);">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <section class="dashboard-header animate-fade-up">
+            <div class="hero-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0.5rem; position: relative; z-index: 1;">
+                    <div class="balance-title" style="margin-top: 0;">Saldo Disponível</div>
+                    <select id="dashboard-month-filter" style="background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 20px; padding: 0.25rem 0.75rem; font-size: 0.8rem; outline: none; backdrop-filter: blur(10px);">
+                        <option value="all" style="color: #000;">Todo o Período</option>
+                        <option value="current" selected style="color: #000;">Este Mês</option>
+                    </select>
+                </div>
+                <h1 class="main-balance skeleton" id="total-balance" style="position: relative; z-index: 1;">R$ 0,00</h1>
+                <p style="font-size: 0.85rem; opacity: 0.8; font-weight: 500; margin-top: 0.2rem; position: relative; z-index: 1; text-align: center;" id="predicted-balance-container">Previsão fim do mês: <strong id="predicted-balance" class="skeleton" style="color: rgba(255,255,255,0.9); font-weight: 700;">R$ 0,00</strong></p>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="animate-fade-up delay-1">
+            <div class="quick-actions-scroll">
+                <div class="quick-action-item" onclick="window.__quickAddType='income'; navigation.go('/transactions/new')">
+                    <div class="quick-action-btn"><i class="fas fa-arrow-down" style="color: var(--success);"></i></div>
+                    <span class="quick-action-label">Receber</span>
+                </div>
+                <div class="quick-action-item" onclick="window.__quickAddType='expense'; navigation.go('/transactions/new')">
+                    <div class="quick-action-btn"><i class="fas fa-arrow-up" style="color: var(--error);"></i></div>
+                    <span class="quick-action-label">Gastar</span>
+                </div>
+                <div class="quick-action-item" onclick="navigation.go('/pay-invoice')">
+                    <div class="quick-action-btn"><i class="fas fa-credit-card"></i></div>
+                    <span class="quick-action-label">Fatura</span>
+                </div>
+                <div class="quick-action-item" onclick="navigation.go('/vaults')">
+                    <div class="quick-action-btn"><i class="fas fa-piggy-bank"></i></div>
+                    <span class="quick-action-label">Cofres</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Smart Insight Premium -->
+        <section class="animate-fade-up delay-2" style="padding: 0 1.5rem; margin-bottom: 1.5rem; margin-top: 0.5rem;">
+            <div class="premium-insight">
+                <div id="smart-insight-icon-container" style="transition: all 0.5s ease; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <!-- CarolOrb será injetado aqui -->
+                </div>
+                <div id="smart-insight-text-wrapper" style="display: flex; flex-direction: column; gap: 3px; transition: opacity 0.4s ease; width: 100%;">
+                    <strong id="smart-insight-title" style="color: #a855f7; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">CAROL IA</strong>
+                    <p id="smart-insight-text" style="font-size: 0.85rem; color: var(--text-primary); margin: 0; line-height: 1.4; font-weight: 500;">Analisando seus padrões de gastos...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="summary-grid animate-fade-up delay-3" style="grid-template-columns: 1fr 1fr; margin-bottom: 1rem;">
+            <div class="summary-card income" style="border: none;">
+                <div class="summary-icon icon" style="margin-bottom: 0.5rem;"><i class="fas fa-arrow-down"></i></div>
+                <div class="summary-label">Receitas</div>
+                <div class="summary-value skeleton" id="total-income">R$ 0,00</div>
+            </div>
+            <div class="summary-card expense" style="border: none;">
+                <div class="summary-icon icon" style="margin-bottom: 0.5rem;"><i class="fas fa-arrow-up"></i></div>
+                <div class="summary-label">Despesas</div>
+                <div class="summary-value skeleton" id="total-expense">R$ 0,00</div>
+            </div>
+        </section>
+
+        <!-- Bloco Novo: Faturas de Cartão -->
+        <section style="padding: 0 1.5rem; margin-bottom: 1rem;">
+            <div class="summary-card" style="display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); padding: 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="summary-icon" style="background: rgba(139, 92, 246, 0.1); color: var(--primary); margin: 0; width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <div class="summary-label" style="font-size: 0.75rem;">Faturas Abertas</div>
+                        <div class="summary-value skeleton" id="total-credit-invoice" style="margin-top: 0; font-size: 1.1rem; color: var(--error);">R$ 0,00</div>
+                    </div>
+                </div>
+                <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: var(--bg-color); color: var(--text-primary); border: 1px solid var(--border-color);" onclick="navigation.go('/pay-invoice')">Pagar</button>
+            </div>
+        </section>
+
+        <!-- Novo: Próximos Vencimentos -->
+        <section class="recent-section" style="padding-top: 0; padding-bottom: 1rem;">
+            <div class="section-header">
+                <h2 class="section-title">Próximos Vencimentos</h2>
+            </div>
+            <div id="upcoming-bills-list" class="recent-list">
+                <!-- Injetado pelo routes.js -->
+                <div class="skeleton" style="height: 60px; margin-bottom: 0.5rem; border-radius: var(--radius-md);"></div>
+                <div class="skeleton" style="height: 60px; margin-bottom: 0.5rem; border-radius: var(--radius-md);"></div>
+            </div>
+        </section>
+
+        <section class="recent-section" style="padding-top: 1rem;">
+            <div class="section-header">
+                <h2 class="section-title">Transações Recentes</h2>
+                <span class="view-all" onclick="navigation.go('/transactions')">Ver tudo</span>
+            </div>
+            <div id="recent-transactions" class="recent-list">
+                <!-- Injetado pelo routes.js -->
+            </div>
+        </section>
+    </main>
+    
+    <!-- FAB Retrátil -->
+    <div class="fab" onclick="navigation.go('/transactions/new')" id="main-fab">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Bottom Nav (Mock placeholder para visão geral) -->
+    <nav class="bottom-nav">
+        <a href="#/dashboard" class="bottom-nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#/transactions" class="bottom-nav-item">
+            <i class="fas fa-list-ul"></i>
+            <span>Extrato</span>
+        </a>
+        <a href="#/analytics" class="bottom-nav-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>Gráficos</span>
+        </a>
+    </nav>
+    
+    <!-- Drawer (Menu Lateral) -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="document.getElementById('drawer').classList.toggle('open'); document.getElementById('drawer-overlay').classList.toggle('open');"></div>
+    <aside class="drawer" id="drawer">
+        <div class="drawer-header" style="padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 1rem;">
+            <div class="avatar" style="width: 48px; height: 48px; flex-shrink: 0; margin-bottom: 0;"><i class="fas fa-user"></i></div>
+            <div style="flex: 1;">
+                <h2 class="user-display-name" style="font-size: 1.15rem; margin-bottom: 0; line-height: 1.2;">...</h2>
+                <span style="font-size: 0.8rem; color: var(--success); font-weight: 600;"><i class="fas fa-circle" style="font-size: 0.5rem; margin-right: 4px;"></i> Online</span>
+            </div>
+        </div>
+        <nav class="drawer-nav" style="padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; flex: 1; overflow-y: auto;">
+            <a href="#/dashboard" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-home" style="color: var(--primary); width: 24px;"></i> Início</a>
+            <a href="#/accounts" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-university" style="color: var(--primary); width: 24px;"></i> Contas</a>
+            <a href="#/cards" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-credit-card" style="color: var(--primary); width: 24px;"></i> Cartões</a>
+            <a href="#/vaults" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-piggy-bank" style="color: var(--primary); width: 24px;"></i> Meus Cofres</a>
+            <a href="#/budgets" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-bullseye" style="color: var(--primary); width: 24px;"></i> Metas de Gastos</a>
+            <a href="#/settings" style="color: var(--text-primary); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-cog" style="color: var(--primary); width: 24px;"></i> Configurações</a>
+            
+            <div style="margin-top: auto; border-top: 1px solid var(--border-color); padding-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+                <button onclick="themeManager.toggle()" style="width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;">
+                    <span style="display: flex; align-items: center; gap: 1rem;"><i id="theme-toggle-icon" class="fas fa-moon" style="width: 24px; color: var(--text-secondary);"></i> <span id="theme-toggle-text">Modo Escuro</span></span>
+                    <i class="fas fa-exchange-alt" style="color: var(--primary); font-size: 1rem;"></i>
+                </button>
+                <a href="#" id="logout-btn" style="color: var(--error); text-decoration: none; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 1rem;"><i class="fas fa-sign-out-alt" style="width: 24px;"></i> Sair da Conta</a>
+            </div>
+        </nav>
+    </aside>
+</div>

@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isWorkspaceMember(wsId) {
+      return isAuthenticated() && exists(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid));
+    }
+
+    function getRole(wsId) {
+      return get(/databases/$(database)/documents/workspaces/$(wsId)/members/$(request.auth.uid)).data.role;
+    }
+
+    function isOwnerOrAdmin(wsId) {
+      return isWorkspaceMember(wsId) && (getRole(wsId) == 'owner' || getRole(wsId) == 'admin');
+    }
+    
+    function isOwnerAdminOrEditor(wsId) {
+      return isWorkspaceMember(wsId) && (getRole(wsId) == 'owner' || getRole(wsId) == 'admin' || getRole(wsId) == 'editor');
+    }
+
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    match /workspaces/{workspaceId} {
+      allow read: if isWorkspaceMember(workspaceId) || (isAuthenticated() && resource.data.ownerId == request.auth.uid);
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isOwnerOrAdmin(workspaceId) || (isAuthenticated() && resource.data.ownerId == request.auth.uid);
+      
+      match /members/{memberId} {
+        allow read: if isWorkspaceMember(workspaceId) || (isAuthenticated() && get(/databases/$(database)/documents/workspaces/$(workspaceId)).data.ownerId == request.auth.uid);
+        allow write: if isOwnerOrAdmin(workspaceId) || (request.auth.uid == memberId && getAfter(/databases/$(database)/documents/workspaces/$(workspaceId)).data.ownerId == request.auth.uid);
+      }
+
+      match /wallets/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /vaults/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /budgets/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /categories/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /creditCards/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /settings/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow write: if isOwnerOrAdmin(workspaceId);
+      }
+      match /notifications/{docId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow create: if isWorkspaceMember(workspaceId);
+        allow update, delete: if isOwnerOrAdmin(workspaceId);
+      }
+      
+      match /transactions/{txId} {
+        allow read: if isWorkspaceMember(workspaceId);
+        allow create: if isOwnerAdminOrEditor(workspaceId) && request.resource.data.createdBy == request.auth.uid;
+        allow update, delete: if isOwnerOrAdmin(workspaceId) || (isOwnerAdminOrEditor(workspaceId) && resource.data.createdBy == request.auth.uid);
+      }
+    }
+  }
+}

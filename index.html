@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinanceApp</title>
+    
+    <!-- PWA Setup -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="./icon.svg">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/layout.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/carol-orb.css">
+    <!-- Ícones, Fontes e Gráficos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Entry Point da Aplicação -->
+    <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+    <!-- Container onde o Router injetará as páginas -->
+    <div id="app-root">
+        <!-- Loader inicial enquanto o Firebase/Router inicia -->
+        <div class="initial-loader" id="initial-loader">
+            <div class="spinner"></div>
+            <p>Carregando...</p>
+        </div>
+    </div>
+    
+    <!-- Container global para toasts/notificações -->
+    <div id="toast-container"></div>
+    
+    <!-- Modal Global: Action Sheet (Segurar card) -->
+    <dialog id="global-action-sheet" style="width: 90%; max-width: 350px; border: none; border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 1.5rem; box-shadow: var(--shadow-lg); mackdrop-filter: blur(5px);">
+        <h3 id="as-title" style="margin-bottom: 1.5rem; text-align: center;">Opções</h3>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <button id="as-btn-edit" class="btn" style="background: var(--bg-color); color: var(--text-primary); text-align: left; justify-content: flex-start; padding: 1rem;"><i class="fas fa-edit" style="width: 24px; color: var(--primary);"></i> Editar</button>
+            <button id="as-btn-delete" class="btn" style="background: rgba(239, 68, 68, 0.1); color: var(--error); text-align: left; justify-content: flex-start; padding: 1rem;"><i class="fas fa-trash" style="width: 24px;"></i> Excluir</button>
+            <button class="btn" style="background: transparent; color: var(--text-secondary); margin-top: 0.5rem;" onclick="document.getElementById('global-action-sheet').close()">Cancelar</button>
+        </div>
+    </dialog>
+
+    <!-- Modal Global: Central de Notificações -->
+    <dialog id="global-notification-center" style="width: 95%; max-width: 400px; max-height: 80vh; border: none; border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 0; box-shadow: var(--shadow-lg); backdrop-filter: blur(5px); overflow: hidden; position: fixed; top: 10vh; margin: auto;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface-color); z-index: 10;">
+            <h3 style="margin: 0; font-size: 1.25rem;"><i class="fas fa-bell" style="color: var(--primary);"></i> Notificações</h3>
+            <button class="icon-btn-small" onclick="document.getElementById('global-notification-center').close()" style="background: transparent; color: var(--text-secondary);"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="notification-list" style="overflow-y: auto; max-height: calc(80vh - 140px); padding: 0.5rem;">
+            <!-- Itens injetados via JS -->
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>Nenhuma notificação.</p>
+            </div>
+        </div>
+        <div style="padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; background: var(--surface-color);">
+            <button id="btn-mark-all-read" style="background: transparent; border: none; color: var(--primary); font-weight: 600; cursor: pointer; padding: 0.5rem;">Marcar todas como lidas</button>
+        </div>
+    </dialog>
+
+    <!-- Modal Global: Confirmação -->
+    <dialog id="global-confirm-dialog" style="width: 85%; max-width: 320px; border: none; border-radius: var(--radius-lg); background: var(--surface-color); color: var(--text-primary); padding: 1.5rem; box-shadow: var(--shadow-lg); text-align: center; overflow: visible;">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; backdrop-filter: blur(10px); border-radius: var(--radius-lg);"></div>
+        <div id="confirm-icon-container" style="margin-bottom: 1rem;">
+            <i id="confirm-icon" class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--danger);"></i>
+        </div>
+        <h3 id="confirm-title" style="margin-bottom: 0.5rem; font-size: 1.2rem; font-weight: 600;">Atenção</h3>
+        <p id="confirm-message" style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">Tem certeza que deseja continuar?</p>
+        <div style="display: flex; gap: 0.75rem;">
+            <button id="confirm-btn-cancel" class="btn" style="flex: 1; background: var(--bg-color); color: var(--text-primary);">Cancelar</button>
+            <button id="confirm-btn-action" class="btn" style="flex: 1; background: var(--danger); color: white;">Confirmar</button>
+        </div>
+    </dialog>
+</body>
+</html>

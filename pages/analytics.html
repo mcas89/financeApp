@@ -1,0 +1,170 @@
+<style>
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding-bottom: 2rem;
+    }
+    
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .kpi-card {
+        background: var(--surface-color);
+        padding: 1.25rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kpi-title {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .kpi-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+    
+    .kpi-sub {
+        font-size: 0.75rem;
+        color: var(--primary);
+        margin-top: 0.25rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chart-card {
+        background: var(--surface-color);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .chart-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 180px;
+        width: 100%;
+    }
+    
+    .chart-container.large {
+        height: 220px;
+    }
+
+    .skeleton-kpi {
+        background: linear-gradient(90deg, var(--border-color) 25%, var(--surface-color) 50%, var(--border-color) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 4px;
+        color: transparent !important;
+        min-height: 20px;
+    }
+</style>
+
+<div class="app-shell page-enter" style="background-color: var(--bg-color); min-height: 100vh;">
+    <header class="top-bar" style="background: var(--glass-bg); backdrop-filter: blur(20px);">
+        <button class="icon-btn" onclick="navigation.back()">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="page-title">Relatórios Premium</h1>
+        <div style="width: 48px;"></div>
+    </header>
+
+    <main class="main-content" style="padding: 1.5rem 1rem;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.1rem; font-weight: 700; margin: 0;">Visão Geral</h2>
+            <select id="analytics-time-filter" style="background: var(--surface-color); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.4rem 0.8rem; font-size: 0.85rem; outline: none; box-shadow: var(--shadow-sm);">
+                <option value="current_month" selected>Este Mês</option>
+                <option value="last_month">Mês Anterior</option>
+                <option value="last_3_months">Últimos 3 Meses</option>
+                <option value="last_6_months">Últimos 6 Meses</option>
+                <option value="this_year">Este Ano</option>
+                <option value="all">Todo Período</option>
+            </select>
+        </div>
+
+        <!-- KPIs Principais -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Maior Gasto do Mês</div>
+                <div class="kpi-value skeleton-kpi" id="kpi-max-expense">Carregando...</div>
+                <div class="kpi-sub skeleton-kpi" id="kpi-max-expense-desc">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Categoria Dominante</div>
+                <div class="kpi-value skeleton-kpi" id="kpi-dominant-cat">Carregando...</div>
+                <div class="kpi-sub skeleton-kpi" id="kpi-dominant-pct">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Variação Diária (DoD)</div>
+                <div class="kpi-value skeleton-kpi" id="kpi-dod">Carregando...</div>
+                <div class="kpi-sub skeleton-kpi" id="kpi-dod-desc">-</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Maior Receita</div>
+                <div class="kpi-value skeleton-kpi" id="kpi-max-income">Carregando...</div>
+                <div class="kpi-sub skeleton-kpi" id="kpi-max-income-desc">-</div>
+            </div>
+        </div>
+
+        <div class="analytics-grid">
+            <!-- Evolução Financeira -->
+            <div class="chart-card">
+                <div class="chart-title">Evolução Financeira <i class="fas fa-chart-area" style="color: var(--primary);"></i></div>
+                <div class="chart-container large">
+                    <canvas id="chart-evolution"></canvas>
+                </div>
+            </div>
+
+            <!-- Balanço Geral (Receitas x Despesas) -->
+            <div class="chart-card">
+                <div class="chart-title">Balanço do Mês <i class="fas fa-chart-pie" style="color: var(--success);"></i></div>
+                <div class="chart-container">
+                    <canvas id="chart-balance"></canvas>
+                </div>
+            </div>
+
+            <!-- Despesas por Categoria -->
+            <div class="chart-card">
+                <div class="chart-title">Gastos por Categoria <i class="fas fa-chart-bar" style="color: #f59e0b;"></i></div>
+                <div class="chart-container large">
+                    <canvas id="chart-categories"></canvas>
+                </div>
+            </div>
+
+            <!-- Distribuição por Conta/Cartão -->
+            <div class="chart-card">
+                <div class="chart-title">Divisão por Contas <i class="fas fa-wallet" style="color: #3b82f6;"></i></div>
+                <div class="chart-container">
+                    <canvas id="chart-wallets"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>

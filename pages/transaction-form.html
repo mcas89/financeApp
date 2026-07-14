@@ -1,0 +1,341 @@
+<style>
+    /* Reset & Base */
+    .page-enter { background-color: var(--bg-color); min-height: 100vh; padding-bottom: 2rem; }
+    
+    /* Header */
+    .form-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: var(--bg-color); position: sticky; top: 0; z-index: 100; }
+    .form-header .close-btn { color: var(--text-secondary); font-size: 1.5rem; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+    .form-header .title { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); }
+    .form-header .save-btn-text { color: var(--primary); font-weight: 700; font-size: 1.1rem; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+
+    /* Container */
+    .form-body { padding: 0 1.5rem; max-width: 600px; margin: 0 auto; }
+
+    /* Type Toggle */
+    .type-toggle-wrapper { display: flex; gap: 1rem; margin-bottom: 2rem; }
+    .type-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.8rem; border-radius: var(--radius-md); font-weight: 700; font-size: 0.95rem; border: 1px solid var(--border-color); color: var(--text-secondary); background: var(--surface-color); transition: all 0.3s; cursor: pointer; }
+    .type-btn.active.expense { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 15px rgba(139,92,246,0.3); }
+    .type-btn.active.income { background: var(--success); color: white; border-color: var(--success); box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+    .type-btn i { font-size: 0.9rem; }
+    .type-btn .fa-arrow-down { transform: rotate(45deg); }
+    .type-btn .fa-arrow-up { transform: rotate(45deg); }
+
+    /* Field Group (Description) */
+    .field-group { margin-bottom: 1.5rem; }
+    .field-label { display: block; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; }
+    .input-box { display: flex; align-items: center; background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0 1rem; height: 56px; transition: border-color 0.2s; }
+    .input-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .input-box i { color: var(--primary); font-size: 1.1rem; width: 24px; text-align: center; margin-right: 0.5rem; }
+    .input-box input { flex: 1; background: transparent; border: none; outline: none; font-size: 1rem; color: var(--text-primary); font-weight: 500; }
+    
+    /* Amount Field */
+    .amount-box { display: flex; align-items: center; justify-content: space-between; background: transparent; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; height: auto; transition: border-color 0.2s; }
+    .amount-box:focus-within { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+    .amount-currency { font-size: 1.5rem; font-weight: 500; color: var(--text-secondary); }
+    .amount-input { text-align: right; font-size: 2.8rem; font-weight: 800; color: var(--primary); background: transparent; border: none; outline: none; width: 100%; font-family: var(--font-display); letter-spacing: -1px; }
+
+    /* List Options (Category, Wallet, Date) */
+    .options-list { background: transparent; display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1.5rem; }
+    .option-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); position: relative; }
+    .option-item:last-child { border-bottom: none; }
+    .option-left { display: flex; align-items: center; gap: 0.75rem; font-weight: 600; font-size: 0.95rem; color: var(--text-primary); }
+    .option-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+    .icon-cat { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .icon-wal { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+    .icon-dat { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+    
+    .option-right { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; color: var(--text-secondary); font-weight: 500; font-size: 0.95rem; }
+    
+    /* Native Input absolute overlays for Options */
+    .hidden-select, .hidden-date { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    
+    /* Advanced Options Divider */
+    .divider-wrapper { display: flex; align-items: center; text-align: center; margin: 2rem 0 1rem; }
+    .divider-wrapper::before, .divider-wrapper::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+    .divider-text { font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; margin: 0 1rem; letter-spacing: 1px; }
+
+    /* Toggles & Advanced Settings */
+    .adv-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+    .adv-item:last-child { border-bottom: none; }
+    .adv-text h4 { margin: 0 0 0.25rem; font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+    .adv-text p { margin: 0; font-size: 0.8rem; color: var(--text-secondary); }
+    
+    /* Switch */
+    .switch-label { position: relative; display: inline-block; width: 50px; height: 28px; flex-shrink: 0; }
+    .switch-label input { opacity: 0; width: 0; height: 0; }
+    .switch-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border-color); transition: .4s; border-radius: 34px; border: 1px solid var(--border-color); }
+    .switch-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    input:checked + .switch-slider { background-color: var(--primary); border-color: var(--primary); }
+    input:checked + .switch-slider:before { transform: translateX(22px); }
+
+    /* Bottom Sheets */
+    .sheet-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .sheet-overlay.active { opacity: 1; pointer-events: auto; }
+    
+    .bottom-sheet { position: fixed; bottom: -100%; left: 0; right: 0; background: var(--surface-color); border-radius: 24px 24px 0 0; padding: 1.5rem 1.5rem 2.5rem; z-index: 1000; transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1); max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.1); }
+    .bottom-sheet.active { bottom: 0; }
+    
+    .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .sheet-title { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); }
+    .sheet-close { background: var(--bg-color); border: none; font-size: 1rem; color: var(--text-secondary); cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    
+    .sheet-list { overflow-y: auto; flex: 1; margin: 0 -1.5rem; padding: 0 1.5rem; }
+    .sheet-item { padding: 1rem 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 1rem; font-weight: 600; font-size: 1.05rem; color: var(--text-primary); cursor: pointer; }
+    .sheet-item:last-child { border-bottom: none; }
+    
+    .sheet-color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Simulação Caixa */
+    .sim-box { background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: var(--radius-md); padding: 1rem; margin-top: 1rem; }
+    
+    /* Inteligência Artificial Shimmer Effect */
+    @keyframes shimmer-bg {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    .ai-filled {
+        animation: ai-glow 1.5s ease-out;
+    }
+    
+    @keyframes ai-glow {
+        0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); border-color: var(--primary); }
+        50% { box-shadow: 0 0 15px 5px rgba(139, 92, 246, 0.1); border-color: var(--primary); }
+        100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); border-color: var(--border-color); }
+    }
+
+    .ai-badge {
+        display: none;
+        align-items: center;
+        gap: 0.25rem;
+        background: linear-gradient(90deg, var(--primary), #a855f7);
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-left: 0.5rem;
+        box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+        animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .ai-badge.visible {
+        display: flex;
+    }
+
+    @keyframes pop-in {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+</style>
+
+<div class="page-enter">
+    <header class="form-header">
+        <button class="close-btn" onclick="navigation.back()"><i class="fas fa-times"></i></button>
+        <span class="title">Novo lançamento</span>
+        <button class="save-btn-text" id="btn-save-tx">Salvar</button>
+    </header>
+
+    <div class="form-body">
+        
+        <!-- Type Toggle -->
+        <div class="type-toggle-wrapper" id="type-toggle">
+            <div class="type-btn active expense" data-value="expense">
+                <i class="fas fa-arrow-down"></i> Despesa
+            </div>
+            <div class="type-btn income" data-value="income">
+                <i class="fas fa-arrow-up"></i> Receita
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+            <label class="field-label" style="display: flex; align-items: center;">
+                O que foi?
+                <span class="ai-badge" id="ai-indicator"><i class="fas fa-magic"></i> Preenchido pelos hábitos</span>
+            </label>
+            <div class="input-box" id="desc-box">
+                <i class="fas fa-receipt"></i>
+                <input type="text" id="tx-desc" placeholder="Ex: Almoço, Uber, Salário...">
+                <i class="fas fa-times-circle" style="color: var(--border-color); cursor: pointer; width: auto; font-size: 1rem;" onclick="document.getElementById('tx-desc').value = '';"></i>
+            </div>
+        </div>
+
+        <!-- Amount -->
+        <div class="field-group" style="margin-bottom: 2rem;">
+            <label class="field-label">Valor</label>
+            <div class="amount-box">
+                <span class="amount-currency">R$</span>
+                <input type="number" id="tx-amount" class="amount-input" placeholder="0,00" step="0.01">
+            </div>
+            
+            <div class="adv-item" id="paid-toggle-row" style="border: none; padding-bottom: 0; padding-top: 1rem;">
+                <div class="adv-text">
+                    <h4>Conta paga</h4>
+                    <p style="opacity: 0.8;">Desmarque para apenas agendar</p>
+                </div>
+                <label class="switch-label">
+                    <input type="checkbox" id="tx-is-paid">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Core Options -->
+        <div class="options-list">
+            
+            <div class="option-item" onclick="openSheet('category-sheet')" style="cursor: pointer;">
+                <div class="option-left">
+                    <div class="option-icon icon-cat"><i class="fas fa-utensils"></i></div>
+                    Categoria
+                </div>
+                <div class="option-right">
+                    <span id="label-category" style="color: #f59e0b; font-weight: 600;">Selecione</span>
+                    <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                </div>
+                <select id="tx-category" style="display: none;" onchange="document.getElementById('label-category').textContent = this.options[this.selectedIndex]?.text || 'Selecione';"></select>
+            </div>
+
+            <div class="option-item" onclick="openSheet('wallet-sheet')" style="cursor: pointer;">
+                <div class="option-left">
+                    <div class="option-icon icon-wal"><i class="fas fa-university"></i></div>
+                    Conta
+                </div>
+                <div class="option-right">
+                    <span id="label-wallet" style="color: #3b82f6; font-weight: 600;">Selecione</span>
+                    <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                </div>
+                <select id="tx-wallet" style="display: none;" onchange="document.getElementById('label-wallet').textContent = this.options[this.selectedIndex]?.text || 'Selecione';"></select>
+            </div>
+
+            <div class="option-item">
+                <div class="option-left">
+                    <div class="option-icon icon-dat"><i class="fas fa-calendar-alt"></i></div>
+                    Data
+                </div>
+                <div class="option-right">
+                    <span id="label-date" style="color: #8b5cf6; font-weight: 600;">Hoje</span>
+                </div>
+                <input type="date" id="tx-date" class="hidden-date" onchange="
+                    const d = this.value; 
+                    if(d) {
+                        const parts = d.split('-');
+                        const formatted = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('label-date').textContent = (d === today) ? formatted + ' (Hoje)' : formatted;
+                    }
+                ">
+            </div>
+
+        </div>
+
+        <!-- Advanced Options Divider -->
+        <div class="divider-wrapper">
+            <span class="divider-text">Opções Avançadas</span>
+        </div>
+
+        <!-- Advanced Settings List -->
+        <div class="options-list">
+            
+            <div class="adv-item">
+                <div class="adv-text">
+                    <h4>Repetir lançamento</h4>
+                    <p>Criar recorrência automática</p>
+                </div>
+                <label class="switch-label">
+                    <input type="checkbox" id="tx-is-recurring" onchange="document.getElementById('recurrence-row').style.display = this.checked ? 'flex' : 'none'">
+                    <span class="switch-slider"></span>
+                </label>
+            </div>
+            
+            <div class="adv-item" id="recurrence-row" style="display: none; padding-left: 1rem; background: rgba(139,92,246,0.03); border-bottom: 1px solid var(--border-color); position: relative;">
+                <div class="adv-text">
+                    <h4>Frequência</h4>
+                </div>
+                <div class="option-right">
+                    <span id="label-frequency" style="color: var(--primary); font-weight: 600;">Mensalmente</span>
+                    <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                    <select id="tx-frequency" class="hidden-select" onchange="document.getElementById('label-frequency').textContent = this.options[this.selectedIndex]?.text.split(' ')[0] || 'Mensalmente';">
+                        <option value="monthly">Mensalmente (1 ano)</option>
+                        <option value="weekly">Semanalmente (1 ano)</option>
+                        <option value="yearly">Anualmente (5 anos)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Installments (Hidden by default, shown when credit card) -->
+            <div class="adv-item" id="installments-row" style="display: none; position: relative;">
+                <div class="adv-text">
+                    <h4>Parcelado</h4>
+                    <p>Dividir em várias parcelas</p>
+                </div>
+                <div class="option-right">
+                    <span id="label-installments" style="color: var(--primary); font-weight: 600;">Não</span>
+                    <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+                </div>
+                <select id="tx-installments" class="hidden-select" onchange="document.getElementById('label-installments').textContent = this.options[this.selectedIndex]?.text.split(' ')[0] || 'Não';">
+                    <option value="1">Não</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                    <option value="9">9x</option>
+                    <option value="10">10x</option>
+                    <option value="11">11x</option>
+                    <option value="12">12x</option>
+                    <option value="24">24x</option>
+                </select>
+            </div>
+
+        </div>
+
+        <!-- Simulation Box -->
+        <div id="credit-simulation-box" class="sim-box" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; color: var(--primary); font-weight: 700; font-size: 0.95rem;">
+                <i class="fas fa-brain"></i> Resumo do lançamento
+            </div>
+            <div id="credit-simulation-content" style="font-size: 0.85rem; color: var(--text-secondary);"></div>
+        </div>
+
+    </div>
+
+    <!-- Modals Bottom Sheets -->
+    <div class="sheet-overlay" id="sheet-overlay" onclick="closeAllSheets()"></div>
+
+    <div class="bottom-sheet" id="category-sheet">
+        <div class="sheet-header">
+            <span class="sheet-title">Selecione a Categoria</span>
+            <button class="sheet-close" onclick="closeAllSheets()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sheet-list" id="category-sheet-list">
+            <!-- Injetado via JS -->
+        </div>
+    </div>
+
+    <div class="bottom-sheet" id="wallet-sheet">
+        <div class="sheet-header">
+            <span class="sheet-title">Selecione a Conta</span>
+            <button class="sheet-close" onclick="closeAllSheets()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="sheet-list" id="wallet-sheet-list">
+            <!-- Injetado via JS -->
+        </div>
+    </div>
+
+    <script>
+        function openSheet(id) {
+            document.getElementById('sheet-overlay').classList.add('active');
+            document.getElementById(id).classList.add('active');
+            // Fechar teclado nativo se estiver aberto
+            document.activeElement.blur();
+        }
+        function closeAllSheets() {
+            document.getElementById('sheet-overlay').classList.remove('active');
+            document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('active'));
+        }
+    </script>
+</div>

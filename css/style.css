@@ -1,0 +1,41 @@
+﻿
+/* Bell Ring Animation */
+@keyframes ring {
+  0% { transform: rotate(0); }
+  10% { transform: rotate(15deg); }
+  20% { transform: rotate(-10deg); }
+  30% { transform: rotate(5deg); }
+  40% { transform: rotate(-5deg); }
+  50% { transform: rotate(0); }
+  100% { transform: rotate(0); }
+}
+
+.ring-animation {
+  display: inline-block;
+  animation: ring 2s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+/* Bell Pulse & Glow Animation */
+@keyframes pulse-glow {
+  0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0)); color: var(--text-primary); }
+  50% { transform: scale(1.2); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)); color: var(--error); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0)); color: var(--text-primary); }
+}
+
+.ring-animation {
+  display: inline-block;
+  animation: pulse-glow 1.5s infinite;
+}
+
+/* Animações AI */
+.ai-pulse {
+    display: inline-block;
+    animation: aiActive 2.5s infinite ease-in-out;
+}
+
+@keyframes aiActive {
+    0% { transform: scale(0.9) rotate(-6deg); filter: drop-shadow(0 0 2px currentColor); opacity: 0.8; }
+    50% { transform: scale(1.25) rotate(6deg); filter: drop-shadow(0 0 12px currentColor); opacity: 1; }
+    100% { transform: scale(0.9) rotate(-6deg); filter: drop-shadow(0 0 2px currentColor); opacity: 0.8; }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dc-app-cache-v4';
+const CACHE_NAME = 'dc-app-cache-v5';
 
 // Recursos críticos para carregar o app em modo avião
 const urlsToCache = [

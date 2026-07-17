@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dc-app-cache-v5';
+const CACHE_NAME = 'dc-app-cache-v6';
 
 // Recursos críticos para carregar o app em modo avião
 const urlsToCache = [
@@ -53,8 +53,13 @@ self.addEventListener('activate', event => {
 // Estratégia de Fetch (Network First, fallback para Cache)
 // Isso garante que você sempre veja a versão mais atual se tiver net, mas carregue do cache se estiver offline.
 self.addEventListener('fetch', event => {
-  // Ignora requisições do firebase/firestore para não conflitar com o SDK nativo do firebase offline
-  if (event.request.url.includes('firestore.googleapis.com') || event.request.url.includes('identitytoolkit.googleapis.com')) {
+  // Apenas intercepta requisições GET
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Ignora requisições do firebase/firestore/google APIs para não conflitar
+  if (event.request.url.includes('googleapis.com') || event.request.url.includes('firebase')) {
     return;
   }
 
